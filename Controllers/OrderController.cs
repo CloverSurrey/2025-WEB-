@@ -3,19 +3,18 @@ using System.Web.Mvc;
 using Music_Shopping.Models;
 using System.Net;
 using System.Diagnostics;
+using Music_Shopping.Models.Services;
 
 namespace Music_Shopping.Controllers
 {
     public class OrderController : Controller
     {
         private readonly OrderService _orderService;
-        private readonly ProductFactory _productFactory;
 
         public OrderController()
         {
             var context = new Music_ShoppingEntities();
             _orderService = new OrderService(context);
-            _productFactory = new ProductFactory(context);
         }
 
         public ActionResult Checkout()

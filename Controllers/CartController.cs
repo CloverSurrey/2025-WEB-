@@ -1,37 +1,48 @@
 using System;
 using System.Web.Mvc;
 using Music_Shopping.Models;
+using Music_Shopping.Models.Services;
 
 namespace Music_Shopping.Controllers
 {
     public class CartController : Controller
     {
-        private readonly ProductFactory _productFactory;
+        private readonly ProductService _productService;
 
         public CartController()
         {
             var context = new Music_ShoppingEntities();
-            _productFactory = new ProductFactory(context);
+            _productService = new ProductService(context);
+        }
+
+        private ShoppingCart GetOrCreateCart()
+        {
+            return Session["Cart"] as ShoppingCart ?? new ShoppingCart();
+        }
+
+        private void SaveCart(ShoppingCart cart)
+        {
+            Session["Cart"] = cart;
         }
 
         public ActionResult Index()
         {
-            var cart = Session["Cart"] as ShoppingCart ?? new ShoppingCart();
+            var cart = GetOrCreateCart();
             return View(cart);
         }
 
         [HttpPost]
         public ActionResult AddToCart(string productId, int quantity)
         {
-            var product = _productFactory.CreateProduct(productId);
+            var product = _productService.GetProductById(productId);
             if (product == null)
             {
                 return HttpNotFound();
             }
 
-            var cart = Session["Cart"] as ShoppingCart ?? new ShoppingCart();
+            var cart = GetOrCreateCart();
             cart.AddItem(product, quantity);
-            Session["Cart"] = cart;
+            SaveCart(cart);
 
             return RedirectToAction("Index");
         }
@@ -39,12 +50,14 @@ namespace Music_Shopping.Controllers
         [HttpPost]
         public ActionResult UpdateQuantity(string productId, int quantity)
         {
-            var cart = Session["Cart"] as ShoppingCart;
-            if (cart != null)
+            if (quantity <= 0)
             {
-                cart.UpdateQuantity(productId, quantity);
-                Session["Cart"] = cart;
+                return RemoveItem(productId);
             }
+
+            var cart = GetOrCreateCart();
+            cart.UpdateQuantity(productId, quantity);
+            SaveCart(cart);
 
             return RedirectToAction("Index");
         }
@@ -52,24 +65,18 @@ namespace Music_Shopping.Controllers
         [HttpPost]
         public ActionResult RemoveItem(string productId)
         {
-            var cart = Session["Cart"] as ShoppingCart;
-            if (cart != null)
-            {
-                cart.RemoveItem(productId);
-                Session["Cart"] = cart;
-            }
+            var cart = GetOrCreateCart();
+            cart.RemoveItem(productId);
+            SaveCart(cart);
 
             return RedirectToAction("Index");
         }
 
         public ActionResult Clear()
         {
-            var cart = Session["Cart"] as ShoppingCart;
-            if (cart != null)
-            {
-                cart.Clear();
-                Session["Cart"] = cart;
-            }
+            var cart = GetOrCreateCart();
+            cart.Clear();
+            SaveCart(cart);
 
             return RedirectToAction("Index");
         }

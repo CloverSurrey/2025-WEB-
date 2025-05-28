@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Music_Shopping.Models
+namespace Music_Shopping.Models.Services
 {
     public class ShoppingCart
     {
@@ -32,12 +32,6 @@ namespace Music_Shopping.Models
                 });
             }
         }
-
-        public void RemoveItem(string productId)
-        {
-            _items.RemoveAll(i => i.ProductId == productId);
-        }
-
         public void UpdateQuantity(string productId, int quantity)
         {
             var item = _items.FirstOrDefault(i => i.ProductId == productId);
@@ -45,6 +39,10 @@ namespace Music_Shopping.Models
             {
                 item.Quantity = quantity;
             }
+        }
+        public void RemoveItem(string productId)
+        {
+            _items.RemoveAll(i => i.ProductId == productId);
         }
 
         public decimal GetTotal()

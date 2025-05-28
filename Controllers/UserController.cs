@@ -1,106 +1,103 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Security.Cryptography;
-using System.Text;
 using Music_Shopping.Models;
+using Music_Shopping.Models.Services;
 
 namespace Music_Shopping.Controllers
 {
     public class UserController : Controller
     {
-        private readonly Music_ShoppingEntities db = new Music_ShoppingEntities();
+        private readonly IUserService _userService; // 依赖接口
 
-        // GET: users
-        public ActionResult Index()
+        // 无参数构造函数，用于MVC框架（当无DI容器时）
+        public UserController()
         {
-            return View(db.Users.ToList());
+            var dbContext = new Music_ShoppingEntities();
+            _userService = new UserService(dbContext);
+        }
+
+        // 构造函数，用于依赖注入
+        public UserController(IUserService userService)
+        {
+            _userService = userService;
         }
 
         // GET: users/Register
         public ActionResult Register()
-        {
+        {    
             return View();
         }
 
         // POST: users/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Register([Bind(Include = "Email,Pwd,Name")]User user)
+        public ActionResult Register([Bind(Include = "Email,Pwd,Name")] User user)
         {
-            var existed = db.Users.FirstOrDefault(m => m.Email == user.Email);
-            if (existed != null)
-            {
-                ModelState.AddModelError("Email", "该邮箱已被注册");
-                return View(user);
-            }
             if (ModelState.IsValid)
             {
-                user.Pwd = HashPassword(user.Pwd);
-                user.Reg_on = DateTime.Now;
-                db.Users.Add(user);
-                db.SaveChanges();
-                return RedirectToAction("Login");
+                var result = _userService.RegisterUser(user);
+                switch (result)
+                {
+                    case RegistrationResult.Success:
+                        return RedirectToAction("Login");
+                    case RegistrationResult.EmailExists:
+                        ModelState.AddModelError("Email", "该邮箱已被注册");
+                        break;
+                    case RegistrationResult.InvalidData:
+                        ModelState.AddModelError("", "提交的数据无效，请检查。");
+                        break;
+                }
             }
+            // 如果ModelState无效或注册失败，则返回带有错误信息的视图
             return View(user);
         }
 
         // GET: users/Login
         public ActionResult Login()
-        {
+        {  
             return View();
         }
 
         // POST: users/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string email, string password)
+        public ActionResult Login(string email, string password) // 直接接收email和password
         {
-            // 对输入的密码进行哈希加密
-            string hashedPassword = HashPassword(password);
-            var user = db.Users.FirstOrDefault(m => m.Email == email && m.Pwd == hashedPassword);
-            if (user != null)
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password))
             {
-                // 登录成功，将用户信息存储在Session中
-                Session["UserId"] = user.user_id;
-                Session["UserName"] = user.Name;
-                
-                // 跳转到商品列表页面
+                ModelState.AddModelError("", "邮箱和密码不能为空。");
+                return View();
+            }
+
+            var result = _userService.LoginUser(email, password);
+            if (result.Success)
+            {
+                Session["UserId"] = result.User.user_id;
+                Session["UserName"] = result.User.Name;
                 return RedirectToAction("Index", "Product");
             }
             else
             {
-                ModelState.AddModelError("", "邮箱或密码错误");
-                return View();
+                ModelState.AddModelError("", result.ErrorMessage ?? "邮箱或密码错误");
+                return View(); 
             }
         }
 
         // GET: Members/Logout
         public ActionResult Logout()
-        {
+        { 
             Session.Clear();
             return RedirectToAction("Login");
         }
 
-        // 检查邮箱是否已存在
+        // 检查邮箱是否已存在 (通过服务层)
         [HttpPost]
         public JsonResult CheckEmail(string email)
         {
-            var exists = db.Users.Any(m => m.Email == email);
+            var exists = _userService.IsEmailTaken(email);
             return Json(new { exists = exists });
         }
-
-        // 哈希加密密码的方法
-        private string HashPassword(string password)
-        {
-            using (SHA256 sha256 = SHA256.Create())
-            {
-                byte[] bytes = Encoding.UTF8.GetBytes(password);
-                byte[] hash = sha256.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
-            }
-        }
+        
     }
 }

@@ -129,7 +129,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CartController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -140,7 +139,6 @@
     <Compile Include="Models\Cart.cs" />
     <Compile Include="Models\CartItem.cs" />
     <Compile Include="Models\IProduct.cs" />
-    <Compile Include="Models\IUser.cs" />
     <Compile Include="Models\Model1.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -159,7 +157,6 @@
     <Compile Include="Models\order.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\OrderService.cs" />
     <Compile Include="Models\order_details.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -171,7 +168,13 @@
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\RecordProduct.cs" />
-    <Compile Include="Models\ShoppingCart.cs" />
+    <Compile Include="Models\Services\IOrderService.cs" />
+    <Compile Include="Models\Services\IProductService.cs" />
+    <Compile Include="Models\Services\IUserService.cs" />
+    <Compile Include="Models\Services\OrderService.cs" />
+    <Compile Include="Models\Services\ProductService.cs" />
+    <Compile Include="Models\Services\ShoppingCart.cs" />
+    <Compile Include="Models\Services\UserService.cs" />
     <Compile Include="Models\sysdiagram.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>

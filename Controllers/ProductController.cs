@@ -4,113 +4,52 @@ using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using Music_Shopping.Models;
+using Music_Shopping.Models.Services;
 
 namespace Music_Shopping.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly Music_ShoppingEntities _db;
-        private readonly ProductFactory _productFactory;
+        private readonly IProductService _productService;
 
+        // 无参数构造函数（当没有DI容器时使用）
         public ProductController()
         {
-            _db = new Music_ShoppingEntities();
-            _productFactory = new ProductFactory(_db);
+            var dbContext = new Music_ShoppingEntities();
+            _productService = new ProductService(dbContext);
         }
 
-        public ActionResult Index(string language = null, string MusicGenre = null)
+        // 用于依赖注入的构造函数
+        public ProductController(IProductService productService)
         {
-            try
-            {
-                // 获取所有产品ID
-                var productIds = _db.products.Select(p => p.product_id).ToList();
-                Debug.WriteLine($"产品ID列表: {string.Join(", ", productIds)}");
-                
-                // 使用ProductFactory创建IProduct对象列表
-                var products = productIds
-                    .Select(id => _productFactory.CreateProduct(id))
-                    .Where(p => p != null)
-                    .ToList();
-                
-                Debug.WriteLine($"创建的产品数量: {products.Count}");
-                foreach (var product in products)
-                {
-                    Debug.WriteLine($"产品: ID={product.ProductId}, 名称={product.ProductName}, 类型={product.Type}");
-                }
+            _productService = productService;
+        }
 
-                // 获取所有唱片记录
-                var records = _db.products_records
-                    .Where(r => productIds.Contains(r.product_id))
-                    .ToList();
-                
-                Debug.WriteLine($"唱片记录数量: {records.Count}");
+        public ActionResult Index(string language = null, string musicGenre = null)
+        {
+            // 使用服务层获取筛选后的产品列表
+            var products = _productService.GetFilteredProducts(language, musicGenre); 
+        
+            // 使用服务层方法获取筛选条件数据
+            ViewBag.MusicGenres = _productService.GetMusicGenres();
+            ViewBag.Languages = _productService.GetLanguages();
 
-                // 根据语言筛选
-                if (!string.IsNullOrEmpty(language))
-                {
-                    var langIds = records
-                        .Where(r => r.language == language)
-                        .Select(r => r.product_id)
-                        .ToList();
-                    products = products.Where(p => langIds.Contains(p.ProductId)).ToList();
-                    Debug.WriteLine($"语言筛选后产品数量: {products.Count}");
-                }
+            // 保存当前选中的筛选条件
+            ViewBag.SelectedMusicGenre = musicGenre;
+            ViewBag.SelectedLanguage = language;
 
-                // 根据类型筛选
-                if (!string.IsNullOrEmpty(MusicGenre))
-                {
-                    var genreIds = records
-                        .Where(r => r.music_genre == MusicGenre)
-                        .Select(r => r.product_id)
-                        .ToList();
-                    products = products.Where(p => genreIds.Contains(p.ProductId)).ToList();
-                    Debug.WriteLine($"类型筛选后产品数量: {products.Count}");
-                }
-
-                // 设置ViewBag数据
-                ViewBag.MusicGenres = records
-                    .Select(r => r.music_genre)
-                    .Distinct()
-                    .OrderBy(g => g)
-                    .ToList();
-                ViewBag.Languages = records
-                    .Select(r => r.language)
-                    .Distinct()
-                    .OrderBy(l => l)
-                    .ToList();
-
-                // 保存当前选中的筛选条件
-                ViewBag.SelectedMusicGenre = MusicGenre;
-                ViewBag.SelectedLanguage = language;
-
-                return View(products);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"发生错误: {ex.Message}");
-                Debug.WriteLine($"错误详情: {ex.StackTrace}");
-                return View(new List<IProduct>());
-            }
+            return View(products);
         }
 
         public ActionResult Details(string id)
         {
-            var product = _productFactory.CreateProduct(id);
+            var product = _productService.GetProductById(id);
             if (product == null)
             {
                 return HttpNotFound();
             }
 
             return View(product);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }
