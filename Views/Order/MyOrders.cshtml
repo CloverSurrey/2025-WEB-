@@ -1,0 +1,47 @@
+@model IEnumerable<Music_Shopping.Models.order>
+
+@{
+    ViewBag.Title = "我的订单";
+}
+
+<div class="container mt-4">
+    <h2>我的订单</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            您还没有任何订单。
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>订单号</th>
+                        <th>下单时间</th>
+                        <th>订单金额</th>
+                        <th>订单状态</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>@order.order_id</td>
+                            <td>@order.create_time</td>
+                            <td>￥@order.total_price</td>
+                            <td>@order.status</td>
+                            <td>
+                                <a href="@Url.Action("OrderDetail", "Order", new { orderId = order.order_id })" 
+                                   id="colored-button" style="text-decoration: none;">查看详情</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div> 

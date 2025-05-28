@@ -1,0 +1,91 @@
+@model Music_Shopping.Models.User
+@{
+    ViewBag.Title = "注册";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>创建你的账户</h2>
+<div class="my-card" style="padding: 32px 40px; margin-top: 40px;">
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+        <div style="margin-bottom: 18px;">
+            <h4 style="text-align:left;">注册信息</h4>
+        </div>
+        <div>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div style="margin-bottom: 22px;">
+                <label class="input-label">邮箱</label>
+                <input type="email" name="Email" class="input-beauty" required oninput="validateEmail()">
+                <span id="emailError" class="input-error-text" style="display:none;">该邮箱已被注册</span>
+            </div>
+            <div style="margin-bottom: 22px;">
+                <label class="input-label">密码</label>
+                <input type="password" name="Pwd" class="input-beauty" required minlength="6" oninput="validatePassword()">
+                <span id="pwdError" class="input-error-text" style="display:none;">密码长度至少为6位</span>
+            </div>            
+            <div style="margin-bottom: 22px;">
+                <label class="input-label">确认密码</label>
+                <input type="password" name="ConfirmPwd" class="input-beauty" required oninput="validatePassword()">
+                <span id="confirmPwdError" class="input-error-text" style="display:none;">两次输入的密码不一致</span>
+            </div>
+            <div style="margin-bottom: 22px;">
+                <label class="input-label">用户名</label>
+                <input type="text" name="Name" class="input-beauty" required>
+            </div>
+            <div style="text-align:left;">
+                <button type="submit" id="colored-button">注册</button>
+            </div>
+        </div>
+}
+    <div class="artist-name" style="margin-top:10px">
+        @Html.ActionLink("已有账户？返回登陆", "Login")
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        function validateEmail() {
+            var email = document.querySelector('input[name="Email"]');
+            var emailError = document.getElementById('emailError');
+            
+            if (email.value) {
+                $.ajax({
+                    url: '@Url.Action("CheckEmail", "User")',
+                    type: 'POST',
+                    data: { email: email.value },
+                    success: function(result) {
+                        if (result.exists) {
+                            emailError.style.display = 'block';
+                        } else {
+                            emailError.style.display = 'none';
+                        }
+                    }
+                });
+            } else {
+                emailError.style.display = 'none';
+            }
+        }
+        function validatePassword() {
+            var pwd = document.querySelector('input[name="Pwd"]');
+            var confirmPwd = document.querySelector('input[name="ConfirmPwd"]');
+            var pwdError = document.getElementById('pwdError');
+            var confirmPwdError = document.getElementById('confirmPwdError');
+            
+                    // 检查密码长度
+                    if(pwd.value.length < 6) {
+                        pwdError.style.display = 'block';
+                    } else {
+                        pwdError.style.display = 'none';
+                    }
+                    
+                    // 检查两次密码是否一致
+                    if(confirmPwd.value && pwd.value !== confirmPwd.value) {
+                        confirmPwdError.style.display = 'block';
+                    } else {
+                confirmPwdError.style.display = 'none';
+            }
+        }
+    </script>
+}

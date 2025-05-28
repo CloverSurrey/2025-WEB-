@@ -1,0 +1,29 @@
+@{
+    ViewBag.Title = "登录";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="my-card" style="padding: 32px 40px; margin-top: 40px;">
+    <h2>登录</h2>
+    @using (Html.BeginForm("Login", "User", FormMethod.Post, new { @class = "form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+        
+        <div style="margin-bottom: 22px;text-align:center">
+            <label class="input-label" for="email" >邮箱</label>
+            <input type="email" name="email" class="input-beauty" placeholder="请输入邮箱" />
+        </div>
+        <div style="margin-bottom: 28px;text-align:center">
+            <label class="input-label" for="password">密码</label>
+            <input type="password" name="password" class="input-beauty" placeholder="请输入密码" />
+        </div>
+        @Html.ValidationSummary(true, "", new { @class = "text-danger", style = "margin-bottom: 15px; text-align: left;" })
+        <div style="margin-bottom: 22px;text-align:center;">
+            <button type="submit" id="colored-button">登录</button>
+        </div>
+        
+        <div style="text-align:center;">
+        @Html.ActionLink("没有账户？立即注册", "Register")
+        </div>
+    }
+</div> 

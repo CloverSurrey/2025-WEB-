@@ -1,0 +1,81 @@
+@{
+    ViewBag.Title = "订单结算";
+    var cart = Session["Cart"] as Music_Shopping.Models.ShoppingCart;
+    var user = Session["User"] as Music_Shopping.Models.User;
+}
+
+<div class="container mt-4">
+    <h2>订单结算</h2>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>订单信息</h4>
+                </div>
+                <div class="card-body">
+                    <form id="orderForm">
+                        <div class="mb-3">
+                            <label for="address" class="form-label">订单地址</label>
+                            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+                        </div>
+                        <button type="button" id="colored-button" onclick="createOrder()">提交订单</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>订单摘要</h4>
+                </div>
+                <div class="card-body">
+                    @if (cart != null)
+                    {
+                        foreach (var item in cart.Items)
+                        {
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>@item.ProductName x @item.Quantity</span>
+                                <span>￥@(item.Price * item.Quantity)</span>
+                            </div>
+                        }
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <strong>总计：</strong>
+                            <strong class="text-danger">￥@cart.GetTotal()</strong>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+@section Scripts {
+    <script>
+        function createOrder() {
+            var formData = {
+                userId: @Session["UserId"],
+                address: $('#address').val(),
+            };
+
+            $.ajax({
+                url: '@Url.Action("CreateOrder", "Order")',
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        alert('订单已成功提交！');
+                        window.location.href = response.redirectUrl;
+                    } else {
+                        alert('提交订单失败：' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert('提交订单失败，请稍后重试。');
+                }
+            });
+        }
+    </script>
+}

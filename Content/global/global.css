@@ -1,0 +1,142 @@
+body {
+  background-color: #f4f2ef;
+  font-family: "Microsoft YaHei", Arial, sans-serif;
+}
+
+.container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 32px 24px 24px 24px;
+}
+
+h2 {
+  margin-bottom: 24px;
+  color: #990808;
+  text-align: center;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+#main-style {
+  color: #990808;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+#colored-button {
+  background-color: #990808;
+  color: #f4f2ef;
+  border: 1px solid #990808;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: auto;
+  transition: background-color 0.3s ease;
+}
+#colored-button:hover {
+  background-color: #f4f2ef;
+  border: 1px solid #990808;
+  color: #990808;
+}
+
+.my-card {
+  width: 35%;
+  margin: 0 auto;
+  border-radius: 20px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.detail-card {
+  margin-bottom: 15px;
+  border-radius: 20px;
+  padding: 40px;
+  background-color: #fff;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  height: 100%;
+  display: flex;
+}
+
+.input-beauty {
+  width: 100%;
+  padding: 10px 10px;
+  border: 1.5px solid #d8d6d3;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 16px;
+  margin-left: 0;
+  margin-right: 0;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
+}
+.input-beauty:focus {
+  border-color: #94b6ef;
+  box-shadow: 0 0 6px rgba(148, 182, 239, 0.3);
+  outline: none;
+}
+.input-error {
+  border-color: #e53935 !important;
+  background: #fff0f0 !important;
+}
+.input-label {
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 2px;
+  display: block;
+}
+.input-error-text {
+  color: #e53935;
+  font-size: 13px;
+  margin-top: 2px;
+  margin-bottom: 4px;
+  display: block;
+}
+/* 商品卡片 */
+.product-card {
+  border: none;
+  padding: 8px;
+  margin-bottom: 16px;
+}
+/* 商品图片容器 */
+.product-image-container {
+  object-fit: cover;
+  display: flex;
+  width: auto;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 4px;
+}
+.product-image-container:hover {
+  -webkit-filter: brightness(90%); /* 兼容Chrome, Safari, Opera */
+  filter: brightness(90%);
+}
+.product-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  text-decoration: none;
+}
+.artist-name {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 4px;
+}
+.product-info-container {
+  flex: 1;
+  display: flex;
+  justify-content: left;
+  position: relative;
+}
+.product-detail-image {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.detail-text {
+  font-size: 14px;
+  color: #757575;
+  margin-bottom: 6px;
+  margin-top: 6px;
+}

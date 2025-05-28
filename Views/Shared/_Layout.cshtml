@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="~/layui/css/layui.css" rel="stylesheet">
+  <link href="~/Content/global/global.css" rel="stylesheet">
+  <script src="~/Scripts/modernizr-2.8.3.js"></script>
+  @Styles.Render("~/Content/css")
+  @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+  <div class="layui-header">
+    <div class="layui-logo">音乐商城</div>
+    <!-- 头部区域（可配合layui 已有的水平导航） -->
+    <ul class="layui-nav layui-layout-left">
+      <!-- 移动端显示 -->
+      <li class="layui-nav-item layui-show-xs-inline-block layui-hide-sm" lay-header-event="menuLeft">
+        <i class="layui-icon layui-icon-spread-left"></i>
+      </li>
+      <li class="layui-nav-item layui-hide-xs"><a href="~/Product/Index">商品列表</a></li>
+      @if (Session["UserName"] != null)
+      {
+        <li class="layui-nav-item layui-hide-xs"><a href="~/Order/MyOrders">我的订单</a></li>
+        <li class="layui-nav-item layui-hide-xs"><a href="~/Cart/Index">购物车</a></li>
+      }
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+      @if (Session["UserName"] != null)
+      {
+        <li class="layui-nav-item layui-hide layui-show-sm-inline-block">
+          <a href="javascript:;">
+            @Session["UserName"]
+          </a>
+        </li>
+      }
+      else
+      {
+        <li class="layui-nav-item"><a href="~/User/Login">登录</a></li>
+      }
+      <li class="layui-nav-item" lay-header-event="menuRight" lay-unselect>
+        <a href="javascript:;">
+          <i class="layui-icon layui-icon-more-vertical"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+    <div class="layui-body">
+        @RenderBody()
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+<script src="~/layui/layui.js"></script>
+</html>

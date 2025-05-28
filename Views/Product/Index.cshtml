@@ -1,0 +1,78 @@
+@model IEnumerable<Music_Shopping.Models.IProduct>
+
+@{
+    ViewBag.Title = "商品列表";
+    var languages = ViewBag.Languages as List<string>;
+    var MusicGenres = ViewBag.MusicGenres as List<int>;
+    string selectedLang = Request["language"];
+    string selectedMusicGenre = Request["MusicGenre"];
+}
+<style>
+.my-select {
+  width: 80%;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 20px;
+  margin-right: 10px;
+}
+</style>
+<div class="layui-side">
+    <div class="card-body">
+        @using (Html.BeginForm("Index", "Product", FormMethod.Get))
+        {
+            <div class="form-group" style="margin-top: 20px;">
+                <select name="language" class="my-select">
+                    <option value="">选择语言</option>
+                    @foreach (var lang in ViewBag.Languages)
+                    {
+                        <option value="@lang" @(ViewBag.SelectedLanguage == lang ? "selected" : "")>@lang</option>
+                    }
+                </select>
+            </div>
+
+            <div class="form-group">
+                <select name="MusicGenre" class="my-select">
+                    <option value="">选择流派</option>
+                    @foreach (var genre in ViewBag.MusicGenres)
+                    {
+                        <option value="@genre" @(ViewBag.SelectedMusicGenre == genre ? "selected" : "")>@genre</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group" style="margin-left: 20px;margin-top: 20px;">
+                <button type="submit" id="colored-button">筛选</button>
+                <a href="@Url.Action("Index")" id="colored-button" style="text-decoration:none">重置</a>
+            </div>
+        }
+    </div>
+</div>
+<div class="row" style="margin-left: 200px;">
+    @if (Model != null && Model.Any())
+    {
+        foreach (var item in Model)
+    {
+        <div class="col-md-3">
+            <div class="product-card">
+                <a href="~/Product/Details/@item.ProductId" class="product-image-container">
+                    <img class="product-image-container" src="~/img/@($"{item.ProductId}.png")">
+                </a>
+                <div class="product-info">
+                    <a class="product-name" style="text-decoration: none;" href="~/Product/Details/@item.ProductId">@item.ProductName</a>
+                    <h5 class="artist-name">@item.Artists</h5>
+                </div>
+            </div>
+        </div>
+        }
+    }
+        else
+    {
+        <div class="col-md-3">
+            <div class="alert alert-info">
+                没有找到符合条件的商品
+            </div>
+        </div>
+    }
+</div>
